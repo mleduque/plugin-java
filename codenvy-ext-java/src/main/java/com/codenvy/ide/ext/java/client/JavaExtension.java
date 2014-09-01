@@ -37,7 +37,7 @@ public class JavaExtension {
                          @Named("JavaFileType") FileType javaFile) {
         JavaResources.INSTANCE.css().ensureInjected();
 
-        editorRegistry.registerDefaultEditor(javaFile, javaEditorProvider);
+        // editorRegistry.registerDefaultEditor(javaFile, javaEditorProvider);
         fileTypeRegistry.registerFileType(javaFile);
     }
 
