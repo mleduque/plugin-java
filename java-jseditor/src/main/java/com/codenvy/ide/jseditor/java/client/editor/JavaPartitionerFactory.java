@@ -22,7 +22,6 @@ import com.codenvy.ide.jseditor.client.partition.DocumentPartitioner;
 import com.codenvy.ide.jseditor.client.partition.DocumentPositionMap;
 import com.codenvy.ide.jseditor.client.partition.PartitionScanner;
 import com.codenvy.ide.jseditor.client.partition.PartitionerFactory;
-import com.google.inject.Provider;
 
 public class JavaPartitionerFactory implements PartitionerFactory {
 
@@ -36,20 +35,18 @@ public class JavaPartitionerFactory implements PartitionerFactory {
     ));
 
     private final PartitionScanner scanner;
-    private final Provider<DocumentPositionMap> documentPositionMapProvider;
 
     @Inject
     public JavaPartitionerFactory(final JavaPartitionScanner scanner,
-                                  final Provider<DocumentPositionMap> documentPositionMapProvider) {
+                                  final DocumentPositionMap documentPositionMap) {
         this.scanner = scanner;
-        this.documentPositionMapProvider = documentPositionMapProvider;
     }
 
     @Override
-    public DocumentPartitioner create() {
+    public DocumentPartitioner create(final DocumentPositionMap documentPositionMap) {
         return new DefaultPartitioner(this.scanner,
                                       LEGAL_CONTENT_TYPES,
-                                      documentPositionMapProvider.get());
+                                      documentPositionMap);
     }
 
 }
