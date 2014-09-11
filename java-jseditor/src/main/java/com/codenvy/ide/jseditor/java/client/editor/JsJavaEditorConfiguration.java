@@ -16,16 +16,20 @@ import static com.codenvy.ide.jseditor.client.partition.DefaultPartitioner.DEFAU
 import com.codenvy.ide.api.texteditor.outline.OutlineModel;
 import com.codenvy.ide.collections.Collections;
 import com.codenvy.ide.collections.StringMap;
+import com.codenvy.ide.ext.java.client.JavaCss;
 import com.codenvy.ide.ext.java.client.JavaResources;
 import com.codenvy.ide.ext.java.client.editor.outline.JavaNodeRenderer;
+import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
 import com.codenvy.ide.jseditor.client.codeassist.CodeAssistProcessor;
 import com.codenvy.ide.jseditor.client.editorconfig.DefaultTextEditorConfiguration;
 import com.codenvy.ide.jseditor.client.partition.DocumentPartitioner;
+import com.codenvy.ide.jseditor.client.partition.DocumentPositionMap;
 import com.codenvy.ide.jseditor.client.reconciler.Reconciler;
 import com.codenvy.ide.jseditor.client.reconciler.ReconcilerFactory;
 import com.codenvy.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
 import com.codenvy.ide.util.executor.BasicIncrementalScheduler;
 import com.codenvy.ide.util.executor.UserActivityManager;
+import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
@@ -34,8 +38,10 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
     private final OutlineModel outlineModel;
     private final StringMap<CodeAssistProcessor> codeAssistProcessors;
     private final UserActivityManager userActivityManager;
-    private Reconciler reconciler;
+    private final Reconciler reconciler;
     private final DocumentPartitioner partitioner;
+    private final DocumentPositionMap documentPositionMap;
+    private final AnnotationModel annotationModel;
 
     @AssistedInject
     public JsJavaEditorConfiguration(@Assisted final EmbeddedTextEditorPresenter editor,
@@ -44,7 +50,10 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
                                      final JavaCodeAssistProcessorFactory codeAssistProcessorFactory,
                                      final ReconcilerFactory reconcilerFactory,
                                      final JavaPartitionerFactory partitionerFactory,
-                                     final JavaReconcilerStrategyFactory strategyFactory) {
+                                     final JavaReconcilerStrategyFactory strategyFactory,
+                                     final Provider<DocumentPositionMap> docPositionMapProvider,
+                                     final JavaAnnotationModelFactory javaAnnotationModelFactory,
+                                     final JavaCss javaCss) {
         this.outlineModel = new OutlineModel(new JavaNodeRenderer(javaResources));
 
         final JavaCodeAssistProcessor codeAssistProcessor = codeAssistProcessorFactory.create(editor);
@@ -56,8 +65,10 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
         final JavaReconcilerStrategy javaReconcilerStrategy = strategyFactory.create(editor,
                                                                                      codeAssistProcessor,
                                                                                      this.outlineModel);
-        this.partitioner = partitionerFactory.create();
-        initReconciler(reconcilerFactory, javaReconcilerStrategy);
+        this.documentPositionMap = docPositionMapProvider.get();
+        this.partitioner = partitionerFactory.create(this.documentPositionMap);
+        this.reconciler = initReconciler(reconcilerFactory, javaReconcilerStrategy);
+        this.annotationModel = javaAnnotationModelFactory.create(editor, this.documentPositionMap);
     }
 
     @Override
@@ -80,11 +91,21 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
         return this.partitioner;
     }
 
-    private void initReconciler(final ReconcilerFactory reconcilerFactory,
-                                final JavaReconcilerStrategy javaReconcilerStrategy) {
-        final BasicIncrementalScheduler scheduler = new BasicIncrementalScheduler(userActivityManager, 50, 100);
-        this.reconciler = reconcilerFactory.create(DEFAULT_PARTITIONING, scheduler, this.partitioner);
-        this.reconciler.addReconcilingStrategy(DEFAULT_CONTENT_TYPE, javaReconcilerStrategy);
+    @Override
+    public DocumentPositionMap getDocumentPositionMap() {
+        return this.documentPositionMap;
+    }
 
+    @Override
+    public AnnotationModel getAnnotationModel() {
+        return this.annotationModel;
+    }
+
+    private Reconciler initReconciler(final ReconcilerFactory reconcilerFactory,
+                                      final JavaReconcilerStrategy javaReconcilerStrategy) {
+        final BasicIncrementalScheduler scheduler = new BasicIncrementalScheduler(userActivityManager, 50, 100);
+        Reconciler reconciler = reconcilerFactory.create(DEFAULT_PARTITIONING, scheduler, this.partitioner);
+        reconciler.addReconcilingStrategy(DEFAULT_CONTENT_TYPE, javaReconcilerStrategy);
+        return reconciler;
     }
 }
