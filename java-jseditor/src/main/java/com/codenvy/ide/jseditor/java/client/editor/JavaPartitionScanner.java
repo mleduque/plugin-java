@@ -392,6 +392,8 @@ public class JavaPartitionScanner implements PartitionScanner, JavaPartitions {
                             break;
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
