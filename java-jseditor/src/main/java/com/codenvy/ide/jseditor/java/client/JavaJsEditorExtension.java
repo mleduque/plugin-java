@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import com.codenvy.ide.api.editor.EditorRegistry;
 import com.codenvy.ide.api.extension.Extension;
 import com.codenvy.ide.api.filetypes.FileType;
+import com.codenvy.ide.ext.java.client.JavaCss;
 import com.codenvy.ide.jseditor.java.client.editor.JsJavaEditorProvider;
 import com.google.inject.name.Named;
 
@@ -24,8 +25,11 @@ public class JavaJsEditorExtension {
     @Inject
     public JavaJsEditorExtension(final EditorRegistry editorRegistry,
                                  final @Named("JavaFileType") FileType javaFile,
-                                 final JsJavaEditorProvider javaEditorProvider) {
+                                 final JsJavaEditorProvider javaEditorProvider,
+                                 final JavaCss javaCss) {
         // register editor provider
         editorRegistry.registerDefaultEditor(javaFile, javaEditorProvider);
+
+        javaCss.ensureInjected();
     }
 }
