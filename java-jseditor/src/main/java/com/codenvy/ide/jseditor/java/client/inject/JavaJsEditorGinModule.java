@@ -11,6 +11,7 @@
 package com.codenvy.ide.jseditor.java.client.inject;
 
 import com.codenvy.ide.api.extension.ExtensionGinModule;
+import com.codenvy.ide.jseditor.java.client.editor.JavaAnnotationModelFactory;
 import com.codenvy.ide.jseditor.java.client.editor.JavaCodeAssistProcessorFactory;
 import com.codenvy.ide.jseditor.java.client.editor.JavaPartitionScanner;
 import com.codenvy.ide.jseditor.java.client.editor.JavaPartitionerFactory;
@@ -27,6 +28,7 @@ public class JavaJsEditorGinModule extends AbstractGinModule {
         install(new GinFactoryModuleBuilder().build(JavaCodeAssistProcessorFactory.class));
         install(new GinFactoryModuleBuilder().build(JsJavaEditorConfigurationFactory.class));
         install(new GinFactoryModuleBuilder().build(JavaReconcilerStrategyFactory.class));
+        install(new GinFactoryModuleBuilder().build(JavaAnnotationModelFactory.class));
         bind(JavaPartitionScanner.class);
         bind(JavaPartitionerFactory.class);
     }

@@ -30,10 +30,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-/**
- * @author <a href="mailto:evidolob@exoplatform.com">Evgen Vidolob</a>
- * @version $Id:
- */
 public class JavaCodeAssistProcessor implements CodeAssistProcessor {
 
     private final EditorPartPresenter  editor;

@@ -459,6 +459,7 @@ public class JavaPartitionScanner implements PartitionScanner, JavaPartitions {
 
         fScanner.setScannedString(content);
 
+        fTokenOffset = 0;
         fTokenLength = 0;
         fPrefixLength = 0;
         fLast = NONE;

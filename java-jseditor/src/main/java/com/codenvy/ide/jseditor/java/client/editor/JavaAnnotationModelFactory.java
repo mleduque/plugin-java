@@ -11,8 +11,18 @@
 package com.codenvy.ide.jseditor.java.client.editor;
 
 import com.codenvy.ide.jseditor.client.partition.DocumentPositionMap;
-import com.codenvy.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
+import com.codenvy.ide.jseditor.client.texteditor.EditorHandle;
 
+/**
+ * Factory for {@link JavaAnnotationModel} instances.
+ */
 public interface JavaAnnotationModelFactory {
-    JavaAnnotationModel create(EmbeddedTextEditorPresenter editor, DocumentPositionMap docPositionMap);
+    /**
+     * Builds an instance of {@link JavaAnnotationModel}.
+     * 
+     * @param editorHandle an {@link EditorHandle}
+     * @param docPositionMap a doc position map model
+     * @return a java annotation model
+     */
+    JavaAnnotationModel create(DocumentPositionMap docPositionMap);
 }

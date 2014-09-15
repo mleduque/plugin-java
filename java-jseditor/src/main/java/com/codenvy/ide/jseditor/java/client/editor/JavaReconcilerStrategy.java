@@ -12,7 +12,10 @@ package com.codenvy.ide.jseditor.java.client.editor;
 
 import static com.codenvy.ide.api.notification.Notification.Status.FINISHED;
 
+import javax.validation.constraints.NotNull;
+
 import com.codenvy.ide.api.editor.EditorPartPresenter;
+import com.codenvy.ide.api.editor.EditorWithErrors;
 import com.codenvy.ide.api.notification.Notification;
 import com.codenvy.ide.api.notification.NotificationManager;
 import com.codenvy.ide.api.projecttree.generic.FileNode;
@@ -22,32 +25,37 @@ import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.java.client.JavaLocalizationConstant;
 import com.codenvy.ide.ext.java.client.editor.JavaParserWorker;
 import com.codenvy.ide.ext.java.client.editor.outline.OutlineUpdater;
+import com.codenvy.ide.ext.java.jdt.core.IProblemRequestor;
 import com.codenvy.ide.ext.java.jdt.core.compiler.IProblem;
+import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
 import com.codenvy.ide.jseditor.client.document.EmbeddedDocument;
 import com.codenvy.ide.jseditor.client.reconciler.DirtyRegion;
 import com.codenvy.ide.jseditor.client.reconciler.ReconcilingStrategy;
 import com.codenvy.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
+import com.codenvy.ide.util.loging.Log;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 public class JavaReconcilerStrategy implements ReconcilingStrategy, JavaParserWorker.WorkerCallback<IProblem> {
 
     private final EmbeddedTextEditorPresenter editor;
-    private final JavaParserWorker         worker;
-    private final OutlineModel             outlineModel;
-    private final NotificationManager      notificationManager;
-    private final JavaCodeAssistProcessor  codeAssistProcessor;
+    private final JavaParserWorker worker;
+    private final OutlineModel outlineModel;
+    private final NotificationManager notificationManager;
+    private final JavaCodeAssistProcessor codeAssistProcessor;
     private final JavaLocalizationConstant localizationConstant;
+    private final AnnotationModel annotationModel;
 
-    private       FileNode                       file;
-    private       EmbeddedDocument               document;
+    private FileNode file;
+    private EmbeddedDocument document;
     private boolean first = true;
     private Notification notification;
 
     @AssistedInject
-    public JavaReconcilerStrategy(@Assisted final EmbeddedTextEditorPresenter editor,
+    public JavaReconcilerStrategy(@Assisted @NotNull final EmbeddedTextEditorPresenter editor,
                                   @Assisted final OutlineModel outlineModel,
                                   @Assisted final JavaCodeAssistProcessor codeAssistProcessor,
+                                  @Assisted final AnnotationModel annotationModel,
                                   final JavaParserWorker worker,
                                   final NotificationManager notificationManager,
                                   final JavaLocalizationConstant localizationConstant) {
@@ -57,6 +65,7 @@ public class JavaReconcilerStrategy implements ReconcilingStrategy, JavaParserWo
         this.notificationManager = notificationManager;
         this.codeAssistProcessor = codeAssistProcessor;
         this.localizationConstant = localizationConstant;
+        this.annotationModel = annotationModel;
 
         editor.addCloseHandler(new EditorPartPresenter.EditorPartCloseHandler() {
             @Override
@@ -114,6 +123,42 @@ public class JavaReconcilerStrategy implements ReconcilingStrategy, JavaParserWo
                 notification = null;
             }
             codeAssistProcessor.enableCodeAssistant();
+        }
+
+        if (this.annotationModel == null) {
+            return;
+        }
+        IProblemRequestor problemRequestor;
+        if (this.annotationModel instanceof IProblemRequestor) {
+            problemRequestor = (IProblemRequestor)this.annotationModel;
+            problemRequestor.beginReporting();
+        } else {
+            editor.setErrorState(EditorWithErrors.EditorState.NONE);
+            return;
+        }
+        try {
+            boolean error = false;
+            boolean warning = false;
+            for (IProblem problem : problems.asIterable()) {
+                if (!error) {
+                    error = problem.isError();
+                }
+                if (!warning) {
+                    warning = problem.isWarning();
+                }
+                problemRequestor.acceptProblem(problem);
+            }
+            if (error) {
+                editor.setErrorState(EditorWithErrors.EditorState.ERROR);
+            } else if (warning) {
+                editor.setErrorState(EditorWithErrors.EditorState.WARNING);
+            } else {
+                editor.setErrorState(EditorWithErrors.EditorState.NONE);
+            }
+        } catch (final Exception e) {
+            Log.error(getClass(), e);
+        } finally {
+            problemRequestor.endReporting();
         }
     }
 }

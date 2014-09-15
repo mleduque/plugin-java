@@ -11,10 +11,12 @@
 package com.codenvy.ide.jseditor.java.client.editor;
 
 import com.codenvy.ide.api.texteditor.outline.OutlineModel;
+import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
 import com.codenvy.ide.jseditor.client.texteditor.EmbeddedTextEditorPresenter;
 
 public interface JavaReconcilerStrategyFactory {
     JavaReconcilerStrategy create(EmbeddedTextEditorPresenter editor,
+                                  OutlineModel outlineModel,
                                   JavaCodeAssistProcessor codeAssistProcessor,
-                                  OutlineModel outlineModel);
+                                  AnnotationModel annotationModel);
 }

@@ -16,7 +16,6 @@ import static com.codenvy.ide.jseditor.client.partition.DefaultPartitioner.DEFAU
 import com.codenvy.ide.api.texteditor.outline.OutlineModel;
 import com.codenvy.ide.collections.Collections;
 import com.codenvy.ide.collections.StringMap;
-import com.codenvy.ide.ext.java.client.JavaCss;
 import com.codenvy.ide.ext.java.client.JavaResources;
 import com.codenvy.ide.ext.java.client.editor.outline.JavaNodeRenderer;
 import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
@@ -52,8 +51,7 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
                                      final JavaPartitionerFactory partitionerFactory,
                                      final JavaReconcilerStrategyFactory strategyFactory,
                                      final Provider<DocumentPositionMap> docPositionMapProvider,
-                                     final JavaAnnotationModelFactory javaAnnotationModelFactory,
-                                     final JavaCss javaCss) {
+                                     final JavaAnnotationModelFactory javaAnnotationModelFactory) {
         this.outlineModel = new OutlineModel(new JavaNodeRenderer(javaResources));
 
         final JavaCodeAssistProcessor codeAssistProcessor = codeAssistProcessorFactory.create(editor);
@@ -62,13 +60,16 @@ public class JsJavaEditorConfiguration extends DefaultTextEditorConfiguration {
 
         this.userActivityManager = userActivityManager;
 
-        final JavaReconcilerStrategy javaReconcilerStrategy = strategyFactory.create(editor,
-                                                                                     codeAssistProcessor,
-                                                                                     this.outlineModel);
         this.documentPositionMap = docPositionMapProvider.get();
+        this.annotationModel = javaAnnotationModelFactory.create(this.documentPositionMap);
+
+        final JavaReconcilerStrategy javaReconcilerStrategy = strategyFactory.create(editor,
+                                                                                     this.outlineModel,
+                                                                                     codeAssistProcessor,
+                                                                                     this.annotationModel);
+
         this.partitioner = partitionerFactory.create(this.documentPositionMap);
         this.reconciler = initReconciler(reconcilerFactory, javaReconcilerStrategy);
-        this.annotationModel = javaAnnotationModelFactory.create(editor, this.documentPositionMap);
     }
 
     @Override
