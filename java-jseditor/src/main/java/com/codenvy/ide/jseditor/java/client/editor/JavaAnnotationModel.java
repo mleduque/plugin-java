@@ -11,73 +11,76 @@
 package com.codenvy.ide.jseditor.java.client.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.codenvy.ide.api.text.Position;
 import com.codenvy.ide.collections.Collections;
 import com.codenvy.ide.collections.StringMap;
 import com.codenvy.ide.ext.java.client.JavaCss;
+import com.codenvy.ide.ext.java.client.JavaResources;
 import com.codenvy.ide.ext.java.client.editor.CompilationUnitDocumentProvider.ProblemAnnotation;
 import com.codenvy.ide.ext.java.jdt.core.IProblemRequestor;
 import com.codenvy.ide.ext.java.jdt.core.compiler.IProblem;
 import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
 import com.codenvy.ide.jseditor.client.annotation.AnnotationModelImpl;
 import com.codenvy.ide.jseditor.client.partition.DocumentPositionMap;
-import com.codenvy.ide.jseditor.client.texteditor.EditorHandle;
+import com.codenvy.ide.jseditor.client.texteditor.EditorResources;
 import com.codenvy.ide.jseditor.client.texteditor.EditorResources.EditorCss;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import com.google.web.bindery.event.shared.EventBus;
 
+/**
+ * An annotation model for java sources.
+ */
 public class JavaAnnotationModel extends AnnotationModelImpl implements AnnotationModel, IProblemRequestor {
 
     private List<IProblem> reportedProblems;
 
-    private List<ProblemAnnotation> fGeneratedAnnotations = new ArrayList<ProblemAnnotation>();
+    private List<ProblemAnnotation> generatedAnnotations = new ArrayList<>();
 
     private final JavaCss javaCss;
     private final EditorCss editorCss;
 
     @AssistedInject
-    public JavaAnnotationModel(final EventBus generalEventBus,
-                               @Assisted final EditorHandle editorHandle,
-                               @Assisted final DocumentPositionMap docPositionMap,
-                               final JavaCss javaCss,
-                               final EditorCss editorCss) {
-        super(generalEventBus, editorHandle, docPositionMap);
-        this.javaCss = javaCss;
-        this.editorCss = editorCss;
+    public JavaAnnotationModel(@Assisted final DocumentPositionMap docPositionMap,
+                               final JavaResources javaResources,
+                               final EditorResources editorResources) {
+        super(docPositionMap);
+        this.javaCss = javaResources.css();
+        this.editorCss = editorResources.editorCss();
     }
 
-    protected Position createPositionFromProblem(IProblem problem) {
+    protected Position createPositionFromProblem(final IProblem problem) {
         int start = problem.getSourceStart();
         int end = problem.getSourceEnd();
 
-        if (start == -1 && end == -1)
+        if (start == -1 && end == -1) {
             return new Position(0);
+        }
 
-        if (start == -1)
+        if (start == -1) {
             return new Position(end);
+        }
 
-        if (end == -1)
+        if (end == -1) {
             return new Position(start);
+        }
 
         int length = end - start + 1;
-        if (length < 0)
+        if (length < 0) {
             return null;
-
+        }
         return new Position(start, length);
     }
 
     @Override
-    public void acceptProblem(IProblem problem) {
+    public void acceptProblem(final IProblem problem) {
         reportedProblems.add(problem);
     }
 
     @Override
     public void beginReporting() {
-        reportedProblems = new ArrayList<IProblem>();
+        reportedProblems = new ArrayList<>();
     }
 
     @Override
@@ -85,50 +88,43 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
         reportProblems(reportedProblems);
     }
 
-    private void reportProblems(List<IProblem> problems) {
+    private void reportProblems(final List<IProblem> problems) {
         boolean temporaryProblemsChanged = false;
 
-        // fPreviouslyOverlaid= fCurrentlyOverlaid;
-        // fCurrentlyOverlaid= new ArrayList<JavaMarkerAnnotation>();
-
-        if (fGeneratedAnnotations.size() > 0) {
+        if (!generatedAnnotations.isEmpty()) {
             temporaryProblemsChanged = true;
-            removeAnnotations(fGeneratedAnnotations, false, true);
-            fGeneratedAnnotations.clear();
+            removeAnnotations(generatedAnnotations, false, true);
+            generatedAnnotations.clear();
         }
 
-        if (reportedProblems != null && reportedProblems.size() > 0) {
+        if (reportedProblems != null && !reportedProblems.isEmpty()) {
 
-            Iterator<IProblem> e = reportedProblems.iterator();
-            while (e.hasNext()) {
+            for (final IProblem problem : reportedProblems) {
+                final Position position = createPositionFromProblem(problem);
 
-                IProblem problem = e.next();
-                Position position = createPositionFromProblem(problem);
                 if (position != null) {
-
-                    ProblemAnnotation annotation = new ProblemAnnotation(problem);
+                    final ProblemAnnotation annotation = new ProblemAnnotation(problem);
                     addAnnotation(annotation, position, false);
-                    fGeneratedAnnotations.add(annotation);
+                    generatedAnnotations.add(annotation);
 
                     temporaryProblemsChanged = true;
                 }
             }
-
         }
 
-        if (temporaryProblemsChanged)
+        if (temporaryProblemsChanged) {
             fireModelChanged();
+        }
     }
 
     @Override
     public boolean isActive() {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Override
     public StringMap<String> getAnnotationDecorations() {
-        StringMap<String> decorations = Collections.createStringMap();
+        final StringMap<String> decorations = Collections.createStringMap();
         // TODO configure this
         decorations.put("org.eclipse.jdt.ui.error", this.editorCss.lineError());
         decorations.put("org.eclipse.jdt.ui.warning", this.editorCss.lineWarning());
@@ -138,7 +134,7 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
 
     @Override
     public StringMap<String> getAnnotationStyle() {
-        StringMap<String> decorations = Collections.createStringMap();
+        final StringMap<String> decorations = Collections.createStringMap();
         // //TODO configure this
         decorations.put("org.eclipse.jdt.ui.error", javaCss.overviewMarkError());
         decorations.put("org.eclipse.jdt.ui.warning", javaCss.overviewMarkWarning());
