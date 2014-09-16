@@ -25,6 +25,7 @@ import com.codenvy.ide.collections.Array;
 import com.codenvy.ide.ext.java.client.JavaLocalizationConstant;
 import com.codenvy.ide.ext.java.client.editor.JavaParserWorker;
 import com.codenvy.ide.ext.java.client.editor.outline.OutlineUpdater;
+import com.codenvy.ide.ext.java.client.projecttree.PackageNode;
 import com.codenvy.ide.ext.java.jdt.core.IProblemRequestor;
 import com.codenvy.ide.ext.java.jdt.core.compiler.IProblem;
 import com.codenvy.ide.jseditor.client.annotation.AnnotationModel;
@@ -99,10 +100,12 @@ public class JavaReconcilerStrategy implements ReconcilingStrategy, JavaParserWo
             notificationManager.showNotification(notification);
             first = false;
         }
-        final String[] path = file.getPath().substring(1).split("/");
-        final String projectPath = "/" + path[0];
-        final String parentName = path[path.length - 2];
-        worker.parse(document.getContents(), file.getName(), file.getPath(), parentName, projectPath, this);
+
+        String packageName = "";
+        if (file.getParent() instanceof PackageNode) {
+            packageName = ((PackageNode)file.getParent()).getQualifiedName();
+        }
+        worker.parse(document.getContents(), file.getName(), file.getPath(), packageName, file.getProject().getPath(), this);
     }
 
     @Override
