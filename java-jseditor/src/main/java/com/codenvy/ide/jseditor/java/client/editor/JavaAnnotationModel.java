@@ -36,7 +36,7 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
 
     private List<IProblem> reportedProblems;
 
-    private List<ProblemAnnotation> generatedAnnotations = new ArrayList<>();
+    private final List<ProblemAnnotation> generatedAnnotations = new ArrayList<>();
 
     private final JavaCss javaCss;
     private final EditorCss editorCss;
@@ -51,8 +51,8 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
     }
 
     protected Position createPositionFromProblem(final IProblem problem) {
-        int start = problem.getSourceStart();
-        int end = problem.getSourceEnd();
+        final int start = problem.getSourceStart();
+        final int end = problem.getSourceEnd();
 
         if (start == -1 && end == -1) {
             return new Position(0);
@@ -66,7 +66,7 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
             return new Position(start);
         }
 
-        int length = end - start + 1;
+        final int length = end - start + 1;
         if (length < 0) {
             return null;
         }
@@ -80,6 +80,7 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
 
     @Override
     public void beginReporting() {
+        clear();
         reportedProblems = new ArrayList<>();
     }
 
@@ -93,7 +94,7 @@ public class JavaAnnotationModel extends AnnotationModelImpl implements Annotati
 
         if (!generatedAnnotations.isEmpty()) {
             temporaryProblemsChanged = true;
-            removeAnnotations(generatedAnnotations, false, true);
+            removeAnnotations(generatedAnnotations, false);
             generatedAnnotations.clear();
         }
 
