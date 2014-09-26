@@ -46,12 +46,12 @@ public class JsJavaEditorProvider implements EditorProvider {
 
     @Override
     public String getId() {
-        return "JavaEditor";
+        return "JsJavaEditor";
     }
 
     @Override
     public String getDescription() {
-        return "Java Editor";
+        return "Java Editor (experimental)";
     }
 
     @Override
