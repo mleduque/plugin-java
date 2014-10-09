@@ -40,7 +40,7 @@ public class JavaExtension {
                          @Named("JspFileType") FileType jspFile) {
         JavaResources.INSTANCE.css().ensureInjected();
 
-        editorRegistry.registerDefaultEditor(javaFile, javaEditorProvider);
+        //editorRegistry.registerDefaultEditor(javaFile, javaEditorProvider);
         fileTypeRegistry.registerFileType(javaFile);
         fileTypeRegistry.registerFileType(jspFile);
     }
