@@ -37,12 +37,12 @@
         </dependency>
         <dependency>
             <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ide-core</artifactId>
+            <artifactId>codenvy-ide-jseditor</artifactId>
             <version>${codenvy.ide.version}</version>
         </dependency>
         <dependency>
             <groupId>com.codenvy.ide</groupId>
-            <artifactId>codenvy-ide-jseditor</artifactId>
+            <artifactId>codenvy-ide-legacy-document</artifactId>
             <version>${codenvy.ide.version}</version>
         </dependency>
         <dependency>
