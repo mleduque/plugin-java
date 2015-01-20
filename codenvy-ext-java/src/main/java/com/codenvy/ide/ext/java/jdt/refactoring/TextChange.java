@@ -11,17 +11,17 @@
 package com.codenvy.ide.ext.java.jdt.refactoring;
 
 import com.codenvy.ide.api.text.BadLocationException;
-import com.codenvy.ide.api.text.Document;
 import com.codenvy.ide.api.text.Region;
 import com.codenvy.ide.api.text.RegionImpl;
-import com.codenvy.ide.api.text.edits.MalformedTreeException;
-import com.codenvy.ide.api.text.edits.MultiTextEdit;
-import com.codenvy.ide.api.text.edits.TextEdit;
-import com.codenvy.ide.api.text.edits.TextEditCopier;
-import com.codenvy.ide.api.text.edits.TextEditGroup;
-import com.codenvy.ide.api.text.edits.TextEditProcessor;
-import com.codenvy.ide.api.text.edits.UndoEdit;
 import com.codenvy.ide.ext.java.worker.WorkerDocument;
+import com.codenvy.ide.legacy.client.api.text.Document;
+import com.codenvy.ide.legacy.client.api.text.edit.MalformedTreeException;
+import com.codenvy.ide.legacy.client.api.text.edit.MultiTextEdit;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEdit;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEditCopier;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEditGroup;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEditProcessor;
+import com.codenvy.ide.legacy.client.api.text.edit.UndoEdit;
 import com.codenvy.ide.runtime.Assert;
 import com.codenvy.ide.runtime.CoreException;
 

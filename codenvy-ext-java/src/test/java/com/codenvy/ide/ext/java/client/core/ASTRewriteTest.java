@@ -18,12 +18,12 @@ import com.codenvy.ide.ext.java.jdt.core.dom.TypeDeclaration;
 import com.codenvy.ide.ext.java.jdt.core.dom.rewrite.ASTRewrite;
 import com.codenvy.ide.ext.java.jdt.core.dom.rewrite.ITrackedNodePosition;
 import com.codenvy.ide.ext.java.jdt.core.dom.rewrite.ListRewrite;
+import com.codenvy.ide.legacy.client.api.text.Document;
+import com.codenvy.ide.legacy.client.api.text.edit.MalformedTreeException;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEdit;
+import com.codenvy.ide.legacy.client.api.text.edit.UndoEdit;
 import com.codenvy.ide.legacy.client.text.DocumentImpl;
 import com.codenvy.ide.api.text.BadLocationException;
-import com.codenvy.ide.api.text.Document;
-import com.codenvy.ide.api.text.edits.MalformedTreeException;
-import com.codenvy.ide.api.text.edits.TextEdit;
-import com.codenvy.ide.api.text.edits.UndoEdit;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -22,11 +22,11 @@ import com.codenvy.ide.ext.java.jdt.refactoring.CategorizedTextEditGroup;
 import com.codenvy.ide.ext.java.jdt.refactoring.GroupCategorySet;
 import com.codenvy.ide.ext.java.worker.WorkerDocument;
 import com.codenvy.ide.ext.java.worker.WorkerMessageHandler;
+import com.codenvy.ide.legacy.client.api.text.Document;
+import com.codenvy.ide.legacy.client.api.text.edit.MultiTextEdit;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEdit;
+import com.codenvy.ide.legacy.client.api.text.edit.TextEditGroup;
 import com.codenvy.ide.runtime.CoreException;
-import com.codenvy.ide.api.text.Document;
-import com.codenvy.ide.api.text.edits.MultiTextEdit;
-import com.codenvy.ide.api.text.edits.TextEdit;
-import com.codenvy.ide.api.text.edits.TextEditGroup;
 
 import java.util.ArrayList;
 import java.util.Iterator;
