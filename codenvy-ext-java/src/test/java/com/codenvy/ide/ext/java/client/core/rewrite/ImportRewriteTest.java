@@ -19,10 +19,10 @@ import com.codenvy.ide.ext.java.jdt.core.dom.ASTParser;
 import com.codenvy.ide.ext.java.jdt.core.dom.CompilationUnit;
 import com.codenvy.ide.ext.java.jdt.core.dom.rewrite.ImportRewrite;
 import com.codenvy.ide.ext.java.jdt.core.formatter.DefaultCodeFormatterConstants;
+import com.codenvy.ide.legacy.client.text.DocumentImpl;
 import com.codenvy.ide.runtime.CoreException;
 import com.codenvy.ide.api.text.BadLocationException;
 import com.codenvy.ide.api.text.Document;
-import com.codenvy.ide.text.DocumentImpl;
 import com.codenvy.ide.api.text.edits.MalformedTreeException;
 import com.codenvy.ide.api.text.edits.TextEdit;
 
